@@ -1,0 +1,16 @@
+abstract: Inline Other Modules in Your Modules
+author: "Ingy d\xC3\xB6t Net <ingy@cpan.org>"
+build_requires: 
+  Test::Base: 0.50
+distribution_type: module
+generated_by: Module::Install version 0.61
+license: perl
+name: Inline-Module
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  Module::Compile: 0.15
+  perl: 5.6.1
+version: 0.10

@@ -1,0 +1,23 @@
+NAME
+    Inline::Module - Inline Other Modules in Your Modules
+
+SYNOPSIS
+        package Foo;
+
+        use Inline::Module 'Bar';
+        use Inline::Module Baz => qw'func1 func2';
+
+DESCRIPTION
+    This module takes another module and compiles it inline.
+
+AUTHOR
+    Ingy döt Net <ingy@cpan.org>
+
+COPYRIGHT
+    Copyright (c) 2006. Ingy döt Net. All rights reserved.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+    See <http://www.perl.com/perl/misc/Artistic.html>
+
