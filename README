@@ -1,20 +1,27 @@
 NAME
-    Inline::Module - Inline Other Modules in Your Modules
+    Inline::Module - Support for Inline-based CPAN Extension Modules
 
 SYNOPSIS
-        package Foo;
-
-        use Inline::Module 'Bar';
-        use Inline::Module Baz => qw'func1 func2';
+        > perl-inline-module
 
 DESCRIPTION
-    This module takes another module and compiles it inline.
+    This module provides support and documentation for creating and
+    maintaining CPAN extension modules. ie Writing XS modules without having
+    to learn XS.
 
-AUTHOR
-    Ingy döt Net <ingy@cpan.org>
+TPF GRANT
+    This module was written as the major portion of the work for a 2014 Perl
+    Foundation grant:
+    "/news.perlfoundation.org/2014/09/grant-proposal-inlinecpp- modul.html"
+    in http:
+
+AUTHORS
+    *   Ingy döt Net <ingy@cpan.org>
+
+    *   David Oswald <davido@cpan.org>
 
 COPYRIGHT
-    Copyright (c) 2006. Ingy döt Net. All rights reserved.
+    Copyright 2014. Ingy döt Net.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
