@@ -16,8 +16,8 @@ Inline::Module - Support for Inline-based CPAN Extension Modules
 
 =head1 SYNOPSIS
 
-    > perl-inline-module create Module::Name::Inline
-    Inline module 'Module::Name::Inline' created as 'lib/Module/Name/Inline.pm'
+    > perl-inline-module generate Module::Name::Inline
+    Inline module 'Module::Name::Inline' generated as 'lib/Module/Name/Inline.pm'
 
 =head1 DESCRIPTION
 

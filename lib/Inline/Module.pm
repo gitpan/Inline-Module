@@ -1,17 +1,14 @@
 use strict; use warnings;
 package Inline::Module;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
+use Config;
 use File::Path;
+use File::Copy;
+use File::Find;
 use Inline();
 
-# use XXX;
-
-###
-# The purpose of this module is to support:
-#
-#   perl-inline-module create lib/Foo/Inline.pm
-###
+#                     use XXX;
 
 sub new {
     my $class = shift;
@@ -26,57 +23,77 @@ sub run {
     $self->$method;
 }
 
-sub do_create {
+sub do_generate {
     my ($self) = @_;
     my @modules = @{$self->{args}};
-    die "The 'create' command requires at least on module name to create\n"
+    die "'generate' requires at least one module name to generate\n"
         unless @modules >= 1;
+    # Check module names first:
     for my $module (@modules) {
-        $self->create_module($module);
+        die "Invalid module name '$module'"
+            unless $module =~ /^[A-Za-z]\w*(?:::[A-Za-z]\w*)*$/;
+    }
+    # Generate requested modules:
+    for my $module (@modules) {
+        my $filepath = $self->write_proxy_module('lib', $module);
+        print "Inline module '$module' generated as '$filepath'\n";
     }
 }
-
-sub create_module {
-    my ($self, $module) = @_;
-    die "Invalid module name '$module'"
-        unless $module =~ /^[A-Za-z]\w*(?:::[A-Za-z]\w*)*$/;
-    my $filepath = $module;
-    $filepath =~ s!::!/!g;
-    $filepath = "lib/$filepath.pm";
-    my $dirpath = $filepath;
-    if (-e $filepath) {
-        warn "'$filepath' already exists\n";
-#         return;
-    }
-    $dirpath =~ s!(.*)/.*!$1!;
-    File::Path::mkpath($dirpath);
-    open OUT, '>', $filepath
-        or die "Can't open '$filepath' for output:\n$!";
-    print OUT $self->proxy_module($module);
-    print "Inline module '$module' created as '$filepath'\n";
-}
-
-sub proxy_module {
-    my ($self, $module) = @_;
-    return <<"...";
-use strict;
-use warnings;
-package $module;
-
-# TODO: Make sure this is latest version (self-check).
-our \$INLINE_VERSION = '$Inline::VERSION';
-
-use File::Path;
-BEGIN { File::Path::mkpath('./blib') unless -d './blib' }
-use Inline Config => directory => './blib';
 
 sub import {
-    splice(\@_, 0, 1, 'Inline');
-    goto &Inline::import;
+    my $class = shift;
+
+    if (@_ == 1) {
+        my ($cmd) = @_;
+        if ($cmd =~ /^(distdir|fixblib)$/) {
+            my $method = "handle_$cmd";
+            $class->$method();
+        }
+        else {
+            die "Unknown argument '$cmd'"
+        }
+        return;
+    }
+
+    return unless @_;
+
+    my ($inline_module) = caller;
+
+    # XXX 'exit' is used to get a cleaner error msg.
+    # Try to redo this without 'exit'.
+    $class->check_api_version($inline_module, @_)
+        or exit 1;
+
+    my $importer = sub {
+        require File::Path;
+        File::Path::mkpath('./blib') unless -d './blib';
+        # TODO try to not use eval here:
+        eval "use Inline Config => " .
+            "directory => './blib', " .
+            "using => '::Parser::RegExp', " .
+            "name => '$inline_module'";
+
+        my $class = shift;
+        Inline->import_heavy(@_);
+    };
+    no strict 'refs';
+    *{"${inline_module}::import"} = $importer;
 }
 
-1;
+sub check_api_version {
+    my ($class, $inline_module, $api_version, $inline_module_version) = @_;
+    if ($api_version ne 'v1' or $inline_module_version ne $VERSION) {
+        warn <<"...";
+It seems that '$inline_module' is out of date.
+
+Make sure you have the latest version of Inline::Module installed, then run:
+
+    perl-inline-module generate $inline_module
+
 ...
+        return;
+    }
+    return 1;
 }
 
 sub get_opts {
@@ -95,9 +112,133 @@ Usage:
         perl-inline-module <command> [<arguments>]
 
 Commands:
-        perl-inline-module create Module::Name::Inline
+        perl-inline-module generate Module::Name::Inline
 
 ...
+}
+
+sub handle_distdir {
+    my ($class) = @_;
+    my ($distdir, @args) = @ARGV;
+    my (@inlined_modules, @included_modules);
+
+    while (@args and ($_ = shift(@args)) ne '--') {
+        push @inlined_modules, $_;
+    }
+    while (@args and ($_ = shift(@args)) ne '--') {
+        push @included_modules, $_;
+    }
+
+    for my $module (@inlined_modules) {
+        $class->write_dyna_module("$distdir/lib", $module);
+        $class->write_proxy_module("$distdir/inc", $module);
+    }
+    for my $module (@included_modules) {
+        $class->write_included_module("$distdir/inc", $module);
+    }
+}
+
+sub handle_fixblib {
+    my ($class) = @_;
+    my $ext = $Config::Config{dlext};
+    -d 'blib'
+        or die "Inline::Module::fixblib expected to find 'blib' directory";
+    find({
+        wanted => sub {
+            -f or return;
+            m!^blib/(config-|\.lock$)! and unlink, return;
+            if (m!^(blib/lib/auto/.*)\.$ext$!) {
+                unlink "$1.inl", "$1.bs";
+                # XXX this deletes:
+                # -lib/auto/Acme/Math/XS/.exists
+                File::Path::rmtree 'blib/arch/auto';
+                File::Copy::move 'blib/lib/auto', 'blib/arch/auto';
+            }
+        },
+        no_chdir => 1,
+    }, 'blib');
+}
+
+sub write_included_module {
+    my ($class, $dest, $module) = @_;
+    my $code = $class->read_local_module($module);
+    $class->write_module($dest, $module, $code);
+}
+
+sub read_local_module {
+    my ($class, $module) = @_;
+    eval "require $module; 1" or die $@;
+    my $file = $module;
+    $file =~ s!::!/!g;
+    my $filepath = $INC{"$file.pm"};
+    open IN, '<', $filepath
+        or die "Can't open '$filepath' for input:\n$!";
+    my $code = do {local $/; <IN>};
+    close IN;
+    return $code;
+}
+
+sub write_proxy_module {
+    my ($class, $dest, $module) = @_;
+
+    my $code = <<"...";
+# DO NOT EDIT
+#
+# GENERATED BY: Inline::Module $Inline::Module::VERSION
+#
+# This module is for author-side development only. When this module is shipped
+# to CPAN, it will be automagically replaced with content that does not
+# require any Inline framework modules (or any other non-core modules).
+
+use strict; use warnings;
+package $module;
+use base 'Inline';
+use Inline::Module 'v1' => '$VERSION';
+
+1;
+...
+
+    $class->write_module($dest, $module, $code);
+}
+
+sub write_dyna_module {
+    my ($class, $dest, $module) = @_;
+    my $code = <<"...";
+# DO NOT EDIT
+#
+# GENERATED BY: Inline::Module $Inline::Module::VERSION
+
+use strict; use warnings;
+package $module;
+use base 'DynaLoader';
+bootstrap $module;
+
+1;
+...
+
+# XXX - think about this later:
+# our \$VERSION = '0.0.5';
+# bootstrap $module \$VERSION;
+
+    $class->write_module($dest, $module, $code);
+}
+
+sub write_module {
+    my ($class, $dest, $module, $text) = @_;
+
+    my $filepath = $module;
+    $filepath =~ s!::!/!g;
+    $filepath = "$dest/$filepath.pm";
+    my $dirpath = $filepath;
+    $dirpath =~ s!(.*)/.*!$1!;
+    File::Path::mkpath($dirpath);
+
+    open OUT, '>', $filepath
+        or die "Can't open '$filepath' for output:\n$!";
+    print OUT $text;
+    close OUT;
+
+    return $filepath;
 }
 
 1;

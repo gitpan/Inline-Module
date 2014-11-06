@@ -10,5 +10,6 @@ README
 bin/perl-inline-module
 lib/Inline/Module.pm
 lib/Inline/Module.pod
+lib/Inline/Module/MakeMaker.pm
 t/000-compile-modules.t
 t/release-pod-syntax.t
