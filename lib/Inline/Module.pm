@@ -1,6 +1,6 @@
 use strict; use warnings;
 package Inline::Module;
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use Config;
 use File::Path;
@@ -70,7 +70,7 @@ sub import {
         # TODO try to not use eval here:
         eval "use Inline Config => " .
             "directory => './blib', " .
-            "using => '::Parser::RegExp', " .
+            "using => 'Inline::C::Parser::RegExp', " .
             "name => '$inline_module'";
 
         my $class = shift;
@@ -233,6 +233,7 @@ sub write_module {
     $dirpath =~ s!(.*)/.*!$1!;
     File::Path::mkpath($dirpath);
 
+    unlink $filepath;
     open OUT, '>', $filepath
         or die "Can't open '$filepath' for output:\n$!";
     print OUT $text;

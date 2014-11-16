@@ -22,6 +22,8 @@ TPF GRANT
 SEE
     *   Inline::Module::Tutorial
 
+    *   Inline::Module::MakeMaker
+
     *   Inline
 
     *   Inline::C

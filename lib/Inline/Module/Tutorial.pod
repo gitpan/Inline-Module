@@ -8,7 +8,7 @@ See http://github.com/ingydotnet/swim-pm#readme
 
 =head1 NAME
 
-Inline::Module Tutorial - Make "XS" modules for CPAN, the easy way
+Inline::Module::Tutorial - Make "XS" modules for CPAN, the easy way
 
 =head1 OVERVIEW
 
@@ -34,18 +34,19 @@ now we'll just show C<Makefile.PL> way:
     use Inline::Module::MakeMaker;
     WriteMakefile(
       NAME => 'Acme::Math::XS',
-      INLINE => {
-        ILSM => 'Inline::C',
-        module => 'Acme::Math::XS',
-        inline => 'Acme::Math::XS::Inline',
-      },
       ...
     );
 
-So you need to use C<Inline::Module::MakeMaker> instead of
-C<ExtUtils::MakeMaker>, and you need to add an C<INLINE> section to the
-C<WriteMakefile> arguments. This is a declaration of everything that
-Inline::Module needs to know to help you out.
+    use lib 'inc'; use Inline::Module::MakeMaker;
+    FixMakefile(
+      module => 'Acme::Math::XS',
+      inline => 'Acme::Math::XS::Inline',
+      ILSM => 'Inline::C',
+    );
+
+So you need to use C<Inline::Module::MakeMaker> and call C<FixMakefile> after
+C<WriteMakefile>. The arguments specify the information the L<Inline::Module>
+needs to do the right things. See L<Inline::Module::MakeMaker> for more info.
 
 =head2 The Module
 

@@ -11,6 +11,9 @@ bin/perl-inline-module
 lib/Inline/Module.pm
 lib/Inline/Module.pod
 lib/Inline/Module/MakeMaker.pm
+lib/Inline/Module/MakeMaker.pod
 lib/Inline/Module/Tutorial.pod
 t/000-compile-modules.t
 t/release-pod-syntax.t
+t/test.t
+xt/test-acme-math-xs.t
