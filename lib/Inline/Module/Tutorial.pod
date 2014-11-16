@@ -31,13 +31,14 @@ No matter which framework you use to make modules (L<ExtUtils::MakeMaker>,
 L<Dist::Zilla>) etc, you'll need to add a little metadata to the controls. For
 now we'll just show C<Makefile.PL> way:
 
-    use Inline::Module::MakeMaker;
+    use ExtUtils::MakeMaker;
     WriteMakefile(
       NAME => 'Acme::Math::XS',
       ...
     );
 
-    use lib 'inc'; use Inline::Module::MakeMaker;
+    use lib 'inc';
+    use Inline::Module::MakeMaker;
     FixMakefile(
       module => 'Acme::Math::XS',
       inline => 'Acme::Math::XS::Inline',
@@ -47,6 +48,10 @@ now we'll just show C<Makefile.PL> way:
 So you need to use C<Inline::Module::MakeMaker> and call C<FixMakefile> after
 C<WriteMakefile>. The arguments specify the information the L<Inline::Module>
 needs to do the right things. See L<Inline::Module::MakeMaker> for more info.
+
+NOTE: You also need to add C<inc> to @INC, even if doesn't exist while you are
+      developing and testing. It will exist when you ship it to CPAN, and the
+      C<make install> process needs it to work properly.
 
 =head2 The Module
 
@@ -64,7 +69,7 @@ C<lib/Acme/Math/XS.pm>. Here is the real module, but condensed a bit:
     ...
     1;
 
-Normally you use Inline like this:
+Normally you use L<Inline::C> like this:
 
     use Inline C => '<... c code ...>';
 
