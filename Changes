@@ -1,3 +1,7 @@
+0.14 Wed Nov 19 06:29:48 UTC 2014
+ - Merge Inline::Module::MakeMaker in Inline::Module
+ - Make all code be OO
+
 0.13 Sun Nov 16 14:36:34 PST 2014
  - Fixed issue
 
