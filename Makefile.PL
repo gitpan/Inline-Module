@@ -26,7 +26,7 @@ my %WriteMakefileArgs = (
     "Inline" => 0,
     "Inline::C" => 0
   },
-  "VERSION" => "0.15",
+  "VERSION" => "0.16",
   "test" => {
     "TESTS" => "t/*.t"
   }
