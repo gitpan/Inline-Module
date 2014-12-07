@@ -7,11 +7,12 @@ META.json
 META.yml
 Makefile.PL
 README
-bin/perl-inline-module
 lib/Inline/Module.pm
 lib/Inline/Module.pod
 lib/Inline/Module/Tutorial.pod
 t/000-compile-modules.t
 t/release-pod-syntax.t
 t/test.t
+xt/generate-stub.t
+xt/setup
 xt/test-acme-math-xs.t

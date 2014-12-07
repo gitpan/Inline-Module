@@ -16,16 +16,14 @@ my %WriteMakefileArgs = (
     "ExtUtils::MakeMaker" => "6.30"
   },
   "DISTNAME" => "Inline-Module",
-  "EXE_FILES" => [
-    "bin/perl-inline-module"
-  ],
+  "EXE_FILES" => [],
   "LICENSE" => "perl",
   "NAME" => "Inline::Module",
   "PREREQ_PM" => {
     "Inline" => 0,
     "Inline::C" => 0
   },
-  "VERSION" => "0.17",
+  "VERSION" => "0.18",
   "test" => {
     "TESTS" => "t/*.t"
   }
