@@ -1,3 +1,6 @@
+0.21 Sat Dec 13 11:29:29 EST 2014
+ - Make handle_distdir return manifest added files
+
 0.20 Fri Dec 12 19:17:54 EST 2014
  - Refactor handle_distdir to support dzil plugin and other external calls
 
