@@ -1,6 +1,6 @@
 use strict; use warnings;
 package Inline::Module;
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 use Config();
 use File::Path();
@@ -51,9 +51,9 @@ sub import {
         if $cmd eq 'makestub';
     return $class->handle_autostub(@_)
         if $cmd eq 'autostub';
-    return $class->handle_distdir(@_)
+    return $class->handle_distdir(@ARGV)
         if $cmd eq 'distdir';
-    return $class->handle_fixblib(@_)
+    return $class->handle_fixblib()
         if $cmd eq 'fixblib';
 
     if ($cmd =~ /^v[0-9]$/) {
@@ -102,7 +102,7 @@ sub importer {
             CLEAN_AFTER_BUILD => 0,
         );
         shift(@_);
-        DEBUG_ON && DEBUG "Inline::Module proxy to Inline::%s", @_;
+        DEBUG_ON && DEBUG "Inline::Module::importer proxy to Inline::%s", @_;
         Inline->import_heavy(@_);
     };
 }
@@ -211,10 +211,14 @@ sub handle_makestub {
 sub handle_autostub {
     my ($class, @args) = @_;
 
-    # Don't mess with Perl tools, while using PERL5OPT and autostub
+    # Don't mess with Perl tools, while using PERL5OPT and autostub:
     return unless
         $0 eq '-e' or
         defined $ENV{_} and $ENV{_} =~ m!/prove[^/]*$!;
+    # Don't autostub in the distdir:
+    return if -e './inc/Inline/Module.pm';
+
+    DEBUG_ON && DEBUG "Inline::Module::autostub(@_)";
 
     require lib;
     lib->import('lib');
@@ -263,8 +267,7 @@ sub handle_autostub {
 }
 
 sub handle_distdir {
-    my ($class) = @_;
-    my ($distdir, @args) = @ARGV;
+    my ($class, $distdir, @args) = @_;
     my (@inlined_modules, @included_modules);
 
     while (@args and ($_ = shift(@args)) ne '--') {
