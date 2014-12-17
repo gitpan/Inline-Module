@@ -1,3 +1,6 @@
+0.22 Tue Dec 16 23:32:17 EST 2014
+ - Use RegExp (not RecDescent) for Inline::C
+
 0.21 Sat Dec 13 11:29:29 EST 2014
  - Make handle_distdir return manifest added files
 

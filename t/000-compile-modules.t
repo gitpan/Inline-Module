@@ -1,4 +1,6 @@
 # This test does a basic `use` check on all the code.
+use lib -e 'inc' ? ('inc') : ();
+
 use Test::More;
 
 use File::Find;
@@ -8,6 +10,8 @@ sub test {
     s{/}{::}g;
     use_ok $_;
 }
+
+$ENV{PERL_ZILD_TEST_000_COMPILE_MODULES} = 1;
 
 find {
     wanted => \&test,
