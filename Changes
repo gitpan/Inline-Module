@@ -1,3 +1,6 @@
+0.23 Tue Dec 16 23:58:49 EST 2014
+ - Add Inline::C and Inline::CPP::Config for Inline::CPP-based modules
+
 0.22 Tue Dec 16 23:32:17 EST 2014
  - Use RegExp (not RecDescent) for Inline::C
 
