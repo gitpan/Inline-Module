@@ -1,3 +1,6 @@
+0.25 Thu Dec 18 11:13:47 PST 2014
+ - Refactor internals to be consistent across plugins
+
 0.24 Wed Dec 17 17:52:05 PST 2014
  - Change to API version v2
 
