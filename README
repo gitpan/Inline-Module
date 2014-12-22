@@ -93,6 +93,36 @@ SEE
 
     *   Inline::CPP
 
+    Also see these modules made with Inline::Module:
+
+    *   Alt::Acme::Math::XS::EUMM
+
+        *   Acme::Math::XS (Pure XS version)
+
+    *   Alt::Acme::Math::XS::CPP
+
+    *   Alt::Acme::Math::XS::DistZilla
+
+    *   Alt::Acme::Math::XS::ModuleBuild
+
+    *   Alt::Acme::Math::XS::ModuleInstall
+
+    *   Alt::Acme::Math::XS::ZillaDist
+
+    *   Alt::Acme::Math::XS::External
+
+    *   Alt::Devel::GlobalDestruction::XS::Inline
+
+    *   Alt::Math::Prime::FastSieve::Inline
+
+    And see these plugins for your favorite module framework:
+
+    *   DistZilla::Plugin::InlineModule
+
+    *   Module::Build::InlineModule
+
+    *   Module::Install::InlineModule
+
 NOTE
     When this module was first created in November 2014, we belatedly
     realized that there was already an Inline::Module on CPAN, by Ingy. The

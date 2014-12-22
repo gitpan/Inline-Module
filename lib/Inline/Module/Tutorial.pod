@@ -8,15 +8,15 @@ See http://github.com/ingydotnet/swim-pm#readme
 
 =head1 NAME
 
-Inline::Module::Tutorial - Make "XS" modules for CPAN, the easy way
+Inline::Module::Tutorial - Make "XS" modules for CPAN. The easy way!
 
 =head1 OVERVIEW
 
 This tutorial will teach you how to write "extension" modules for CPAN using
-L<Inline::Module>. The normal way to do this is with "XS", Perl's mechanism
-for binding C and C++ code to Perl. Inline::Module lets you do this much
-easier, avoiding the need to learn XS, but delivering results that are as
-robust as hand-written XS.
+L<Inline::Module>. The old way to do this is with "XS", Perl's mechanism for
+binding C and C++ code to Perl. Inline::Module lets you do this much easier,
+avoiding the need to learn XS, but delivering results that are as robust as
+hand-written XS.
 
 =head1 BASICS
 
@@ -28,8 +28,8 @@ demonstrate how to do this.
 =head2 The Makefile.PL
 
 No matter which framework you use to make modules (L<ExtUtils::MakeMaker>,
-L<Dist::Zilla>) etc, you'll need to add a little metadata to the controls. For
-now we'll just show C<Makefile.PL> (L<ExtUtils::MakeMaker>) way:
+L<Dist::Zilla>) etc, you'll need to add a little B<metadata> to the controls.
+For now we'll just show C<Makefile.PL> (L<ExtUtils::MakeMaker>) way:
 
     use lib 'inc';
     use ExtUtils::MakeMaker;
@@ -47,9 +47,9 @@ now we'll just show C<Makefile.PL> (L<ExtUtils::MakeMaker>) way:
       },
     );
 
-So you need to use C<Inline::Module> and add a C<postamble> section with an
+So you need to C<use Inline::Module> and add a C<postamble> section with an
 C<inline> section (with at least a C<module> name) to C<WriteMakefile>. The
-arguments specify the information the L<Inline::Module> needs to do the right
+arguments specify the information that L<Inline::Module> needs to do the right
 things. The C<stub> and C<ilsm> values above are the defaults, so not really
 needed in that example. All the values for those keys can be either a string
 or an array ref of strings (ie single or multiple values).
@@ -134,7 +134,7 @@ C<Inline::Module>, and that's a no-no. That's because this stub is used for
 author side development and testing, and another stub replaces it at module
 release time.
 
-That stub will look like this:
+The replacement stub will look like this:
 
     use strict; use warnings;
     package Acme::Math::XS::Inline;
@@ -249,14 +249,14 @@ In the C<distdir> phase, we need to:
 
 =item * Inline::C
 
-=item * a few more helper modules
+=item * a few helper modules
 
 =back
 
 =back
 
-We also need to move the test/build C<lib/Acme/Math/XS/Inline.pm> under
-C<inc/> and put the C<Dynaloader> version in its place under C<lib>.
+We also need to move the test/build stub module under C<inc/> and put the
+C<Dynaloader> version in its place under C<lib>.
 
 The C<pure_all> phase is simply tweaked to rearrange the exact location of
 things that get generated under C<blib>. Then they are ready to be installed
@@ -330,26 +330,32 @@ See L<Alt::Acme::Math::XS::ModuleInstall> for a working example on CPAN.
 
 Just add these lines to your Meta file:
 
-=zild:
-
-    inline:
-      module: Acme::Math::XS
-      stub: Acme::Math::XS::Inline
-      ilsm: Inline::C
+    =zild:
+      inline:
+        module: Acme::Math::XS
+        stub: Acme::Math::XS::Inline
+        ilsm: Inline::C
 
 See L<Alt::Acme::Math::XS::ZillaDist> for a working example on CPAN.
 
 =head1 EXTERNAL FILES
 
-How to do this, but have your C/C++ in external files…
+Putting a lot of C code in your Perl might be too messy. You can just move it
+to a C<.c> file, and then change your Perl to this:
 
-=head1 EXTERNAL LIBRARIES
+    use Acme::Math::XS::Inline C => 'lib/Acme/Math/XS.c';
 
-How to write modules that bind exteral libraries (like C<libyaml>)…
+Note: You can put the C<.c> file anywhere you want, except at the top level.
+      Doing that will confuse the Makefile. If you put it under C<lib> like
+      above, it will get installed like C<.pm> files. This might be desirable
+      since it opens all your source (just lie when it's actually I<inline>).
 
 =head1 INLINE::CPP SPECIFICS
 
-Things that change when you use C<C++>…
+Under the hood, L<Inline::Module> does quite a few things different when you
+use L<Inline::CPP>, but this should be mostly transparent to you. Just make
+sure you declare your C<ilsm> keyword to be C<Inline::CPP> and everything
+should work fine.
 
 =head1 USING LANGUAGES OTHER THAN C<C> AND C<C++>
 
@@ -362,8 +368,7 @@ Report any issues to: L<https://github.com/ingydotnet/inline-module-pm/issues>
 =head1 DOCUMENT STATUS
 
 This document reflects the current state of C<Inline::Module>. At this time,
-it is brand new, and thus many sections can't be written yet. This will change
-soon, and this document will be kept up to date with all the changes.
+it is brand new, so please report any bugs and/or misgivings.
 
 =head1 AUTHORS
 
