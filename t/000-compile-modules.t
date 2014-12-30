@@ -1,4 +1,6 @@
 # This test does a basic `use` check on all the code.
+use lib -e 'inc' ? ('inc') : ();
+
 use Test::More;
 
 use File::Find;

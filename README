@@ -69,6 +69,15 @@ DESCRIPTION
         This will cause the stubs to be updated every time the "Makefile.PL"
         is run.
 
+    "bundle"
+            bundle => 0,
+
+        By default Inline::Module will bundle all the dependencies under
+        your distribution's "inc/" directory. Setting this option to 0 will
+        disable that, but then you are responsible for declaring all the
+        dependencies yourself. Do this with the knowledge that if Inline::*
+        APIs change, your distribution may break.
+
 STUB MODULE GENERATION
     During development, Inline::Module needs to generate *stub* modules. For
     the case in the synopsis, it would need to generate
