@@ -107,7 +107,7 @@ TPF GRANT
     <http://news.perlfoundation.org/2014/09/grant-proposal-inlinecpp-modul.h
     tml>
 
-SEE
+SEE ALSO
     *   Inline::Module::Tutorial
 
     *   Inline
@@ -154,12 +154,12 @@ NOTE
     he'll redo that one under another name.
 
 AUTHORS
-    *   Ingy döt Net <ingy@cpan.org>
+    Ingy döt Net <ingy@cpan.org>
 
-    *   David Oswald <davido@cpan.org>
+    David Oswald <davido@cpan.org>
 
-COPYRIGHT
-    Copyright 2014. Ingy döt Net.
+COPYRIGHT AND LICENSE
+    Copyright 2014-2015. Ingy döt Net.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
